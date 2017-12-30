@@ -65,7 +65,6 @@ var git = new Git({
 
 var server = http.createServer(function(req, res) {
 
-	//console.log(req.headers)
 	req.pause();
 	git.handle(req, res, function() {
 		res.statusCode = 403;
@@ -119,7 +118,7 @@ function authRepo(organization, name, credentials, cb) {
 				return cb(new Error('403 Forbidden'));
 			}
 
-			cb()
+			cb();
 		});
 	});
 }
@@ -203,7 +202,7 @@ function readProcfile(docs, gitrepo, cb) {
 	fs.exists(procFilePath, function(exists) {
 
 		if (!exists) {
-			return cb(new Error('Procfile missing from root of project'))
+			return cb(new Error('Procfile missing from root of project'));
 		}
 
 		fs.readFile(procFilePath, function(err, data) {
@@ -213,12 +212,8 @@ function readProcfile(docs, gitrepo, cb) {
 			try {
 				var proc = procfile.parse(data.toString());
 			} catch(err) {
-				//
-			}
-			if (err) {
 				return cb(err);
 			}
-
 			cb(null, proc);
 		});
 	});
@@ -230,6 +225,7 @@ function tarball(docs, gitrepo, cb) {
 			return name.indexOf('.git') != -1;
 		}
 	});
+	
 	var tarPath = docs.app.organization.name + '/' + docs.app.name + '/application/' + docs.tag + '.tar';
 
 	minioClient.putObject('tar', tarPath, tarStream, 0, 'application/x-tar', function(err) {
@@ -260,7 +256,9 @@ function deploy(docs, cb) {
 			long : true
 		}) + ' to deploy' + "\n");
 		cb();
+		
 	}).on('failed', function(err) {
+		
 		sideband.write('-----> Deploy failed\n');
 		sideband.write('       ' + err + "\n");
 		sideband.write('       ' + "Took " + ms((Date.now() - now), {
@@ -268,15 +266,19 @@ function deploy(docs, cb) {
 		}) + ' to deploy' + "\n");
 
 		cb(errors.git(err));
+		
 	}).on('log', function(line) {
+		
 		if (line.indexOf('Error:') == 0) {
 			sideband.write('\n\n' + line.red + '\n\n');
 		} else
 			sideband.write(line + '\n');
+			
 	}).ttl(nconf.get('deploy:ttl')).save();
 }
 
 function build(docs, cb) {
+	
 	var sideband = docs.gitrepo.sideband;
 
 	var commit = new Commit({
@@ -313,6 +315,7 @@ function build(docs, cb) {
 			commit : docs.commit._id,
 			proc : docs.proc
 		}).on('complete', function(build) {
+			
 			clearInterval(timmer);
 			sideband.write('-----> ' + "Build completed...".green + "\n");
 			sideband.write('       ' + "Took " + ms((Date.now() - now), {
@@ -321,7 +324,9 @@ function build(docs, cb) {
 
 			docs.build = build;
 			cb(null, docs);
+			
 		}).on('failed', function(err) {
+			
 			clearInterval(timmer);
 			sideband.write('-----> Build failed\n');
 			sideband.write('       ' + err + "\n");
@@ -329,13 +334,14 @@ function build(docs, cb) {
 				long : true
 			}) + ' to deploy' + "\n");
 			cb(errors.git(err));
+			
 		}).on('log', function(line) {
+			
 			if (line.indexOf('Error:') == 0) {
 				sideband.write('\n\n' + line.red + '\n\n');
 			} else
 				sideband.write(line + '\n');
 		}).ttl(nconf.get('build:ttl')).save();
-
+		
 	});
-
 }
