@@ -1,0 +1,31 @@
+{
+  "name": "service-git",
+  "version": "0.0.1",
+  "description": "GIT server",
+  "main": "git.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NodeTopia/service-git.git"
+  },
+  "author": "Tim <mangoraft@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NodeTopia/service-git/issues"
+  },
+  "homepage": "https://github.com/NodeTopia/service-git#readme",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "giting": "0.0.7",
+    "minio": "^2.0.3",
+    "ms": "^2.1.1",
+    "nconf": "^0.10.0",
+    "nodetopia-kue": "git+https://github.com/NodeTopia/Kue.git",
+    "nodetopia-lib": "git+https://github.com/NodeTopia/Lib.git",
+    "nodetopia-model": "git+https://github.com/NodeTopia/Model.git",
+    "procfile": "^0.1.1",
+    "tar-fs": "^1.16.0"
+  }
+}
